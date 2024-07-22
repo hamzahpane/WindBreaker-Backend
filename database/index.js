@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
-const { dbHost, dbPort, dbName , dbUser, dbPass ,dbApp} = require('../app/config');
+const { dbAPI} = require('../app/config');
 
 //untuk Moongose Compas
 // const mongodbURI = `mongodb://${dbHost}:${dbPort}/${dbName}`;
 
 //untuk Moongose Atlas
-const mongodbURI = `mongodb+srv://${dbUser}:${dbPass}@${dbHost}/?retryWrites=true&w=majority&appName=${dbApp}`;
+const mongodbURI = `${dbAPI}`;
 mongoose.connect(mongodbURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
