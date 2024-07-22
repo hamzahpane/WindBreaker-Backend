@@ -4,8 +4,7 @@
     const cookieParser = require('cookie-parser');
     const logger = require('morgan');
     const cors = require('cors');
-    const mongoSanitize = require('express-mongo-sanitize');
-
+    
     const PaymentRoute = require('./app/Payement/router');
     const ProductRoute = require('./app/Products/router');
     const CategoresRoute = require('./app/Category/route');
@@ -20,7 +19,6 @@
     
     const invoiceRoute = require('./app/Invoce/route');
     const orderItemRoute  = require('./app/Orderitem/router');
-    const { default: helmet } = require('helmet');
     const app = express();
 
     // Mengatur view engine dan direktori views
@@ -58,9 +56,6 @@
         next(createError(404));
     });
 
-
-    app.use(helmet())
-    app.use(mongoSanitize())
     // Error handler
     app.use((err, req, res, next) => {
         // Set local variables, hanya menyediakan error di environment development
