@@ -4,7 +4,9 @@
     const cookieParser = require('cookie-parser');
     const logger = require('morgan');
     const cors = require('cors');
-    
+    const helmet = require('helmet');
+    const ExpressMongoSanitize = require('express-mongo-sanitize');
+
     const PaymentRoute = require('./app/Payement/router');
     const ProductRoute = require('./app/Products/router');
     const CategoresRoute = require('./app/Category/route');
@@ -13,12 +15,10 @@
     const deliveryAddresRoute = require('./app/Deliveryaddres/router');
     const TagsRoute = require('./app/Tag/router');
     const cartItemsRoute = require('./app/Cart/route');
-
-    
     const orderRouter = require('./app/Orders/route');
-    
     const invoiceRoute = require('./app/Invoce/route');
     const orderItemRoute  = require('./app/Orderitem/router');
+ 
     const app = express();
 
     // Mengatur view engine dan direktori views
@@ -26,6 +26,7 @@
     app.set('view engine', 'pug');
 
     app.use(cors());
+    app.use(helmet());
     app.use(logger('dev'));
     app.use(express.json());
     app.use(express.urlencoded({ extended: false }));
