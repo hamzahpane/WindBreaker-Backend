@@ -46,7 +46,7 @@
     app.use('/api',  orderItemRoute);
     app.use('/api',  PaymentRoute);
         // Routing untuk halaman utama
-    app.get('/', (req, res) => {
+    app.get('/v1', (req, res) => {
         res.render('index', {
             title: 'eduwork API Service'
         });
