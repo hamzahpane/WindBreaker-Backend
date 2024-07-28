@@ -67,6 +67,4 @@
         res.render('error');
     });
 
- app.listen(4000  , () => {
-    console.log('server is runing');
- })
+    module.exports = app;
