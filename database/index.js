@@ -1,18 +1,15 @@
 const mongoose = require('mongoose');
 
-const {  dbHost ,dbPort , dbName ,dbUser ,dbApp ,dbPass} = require('../app/config');
+const {  dbHost ,dbPort , dbUser  ,dbName ,dbPass} = require('../app/config');
 
-// untuk Moongose Compas
-const mongodbURI = `mongodb://${dbHost}:${dbPort}/${dbName}`;
+console.log(dbUser , dbPass , dbHost , dbPort , dbName );
 
-// untuk Moongose Atlas
-// mongoose.connect(`mongodb+srv://mhamzahpane27:HqGe5S8GawhcFy1H@coffeshop.hl6txml.mongodb.net/?retryWrites=true&w=majority&appName=Coffeshop`, {
-//     useNewUrlParser: true,
 
-// });
+const mongodbURI = `mongodb://${dbUser}:${dbPass}@${dbHost}:${dbPort}/${dbName}?authSource=admin`;
+console.log(mongodbURI);
 
 mongoose.connect(mongodbURI, {
-useNewUrlParser: true,
+
 });
 
 
