@@ -3,12 +3,10 @@ const bcrypt = require('bcrypt');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
-const { getToken } = require('../../util/index'); // Perbaiki cara mengimpor getToken
-
+const { getToken } = require('../../util/index');
 
 const register = async (req, res, next) => {
     try {
-        
         const payload = req.body;
         let user = new User(payload);
         await user.save();
@@ -19,14 +17,12 @@ const register = async (req, res, next) => {
                 error: 1,
                 message: error.message,
                 fields: error.message
-                
             });
         }
         next(error);
     }
 };
 
-// Middleware
 const localStrategy = async (email, password, done) => {
     try {
         let user = await User
@@ -43,12 +39,14 @@ const localStrategy = async (email, password, done) => {
     done();
 };
 
-// Login Method
 const login = async (req, res, next) => {
     passport.authenticate('local', async (err, user) => {
         try {
-            if (err) throw err; // Tangkap dan lemparkan kesalahan
+            if (err) throw err;
             if (!user) return res.json({ err: 1, message: 'Email or Password incorrect' });
+            
+            console.log('Secret Key:', config.secretKey); // Tambahkan ini untuk debug
+            
             let signed = jwt.sign(user, config.secretKey);
             await User.findByIdAndUpdate(user._id, { $push: { token: signed } });
             res.json({
@@ -57,13 +55,12 @@ const login = async (req, res, next) => {
                 token: signed
             });
         } catch (error) {
-            next(error); // Panggil fungsi next dengan kesalahan yang terjadi
+            next(error);
         }
     })(req, res, next);
 };
 
-// metode logout 
-const logout = async (req, res, next) => { // Ubah fungsi logout menjadi async
+const logout = async (req, res, next) => {
     try {
         let token = getToken(req);
         let user = await User.findOneAndUpdate({ token: { $in: [token] } }, { $pull: { token: token } }, { useFindAndModify: false });
@@ -83,7 +80,6 @@ const logout = async (req, res, next) => { // Ubah fungsi logout menjadi async
     }
 };
 
-// cek token
 const me = (req, res, next) => {
     if (!req.user) {
         return res.json({
