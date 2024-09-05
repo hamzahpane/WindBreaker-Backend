@@ -1,56 +1,98 @@
+
+// Order.js
 const Order = require('./model');
-const OrderItem = require('../Orderitem/model');
+const Payment = require('../Payement/model');
+const Invoice = require('../Invoce/model'); 
 
 const createOrder = async (req, res, next) => {
-  try {
-    const { orderItems, ...rest } = req.body;
+    try {
+        const { products, payment_id, deliveryAddress } = req.body;
+        let totalProductPrice = 0;
 
-    if (!orderItems || orderItems.length === 0) {
-      return res.status(400).json({ error: 'OrderItems are required' });
+        // Cari payment berdasarkan payment_id
+        const payment = await Payment.findById(payment_id);
+        if (!payment) {
+            return res.status(404).json({
+                error: 1,
+                message: `Payment dengan ID ${payment_id} tidak ditemukan.`
+            });
+        }
+
+        // Buat item order dan hitung total harga produk
+        const orderItems = products.map(item => {
+            const { name, price, quantity } = item;
+            const subtotal = price * quantity;
+            totalProductPrice += subtotal;
+            return {
+                name,
+                price,
+                quantity
+            };
+        });
+
+        // Total amount adalah total harga produk ditambah ongkos kirim
+        const totalAmount = totalProductPrice + 50000; // Delivery fee
+
+        // Buat order baru
+        const newOrder = new Order({
+            orderItems,
+            deliveryAddress,
+            deliveryFee: 50000,
+            totalProductPrice,
+            totalAmount,
+            payment: payment.Name // Menggunakan nama dari model Payment
+        });
+
+        // Simpan order ke database
+        const savedOrder = await newOrder.save();
+
+        // Buat dan simpan invoice setelah order berhasil disimpan
+        const invoice = new Invoice({
+            order: savedOrder
+        });
+        const savedInvoice = await invoice.save();
+          console.log(savedInvoice);
+        // Kirim response berhasil
+        return res.status(201).json({
+            order: savedOrder,
+            invoice: savedInvoice
+        });
+    } catch (error) {
+        next(error); // Tangani error
     }
-
-    const orderItemIds = [];
-
-    for (const item of orderItems) {
-      let orderItem = new OrderItem(item);
-      const savedItem = await orderItem.save();
-      orderItemIds.push(savedItem._id); 
-    }
-
-    const newOrder = new Order({
-      ...rest,
-      orderItems: orderItemIds, 
-    });
-
-    const savedOrder = await newOrder.save();
-
-    return res.status(201).json(savedOrder);
-  } catch (error) {
-    next(error); 
-  }
 };
+
 
 const getOrders = async (req, res, next) => {
   try {
-    const orders = await Order.find();
-    
+    const orders = await Order.find()
+      .populate('orderItems') // Populasi orderItems untuk mendapatkan detail item
+      .populate('deliveryAddress'); // Populasi deliveryAddress untuk mendapatkan detail alamat
+
     const transformedOrders = orders.map(order => ({
-      _id: order._id, // Menggunakan _id langsung, karena sudah diubah di model Order
+      _id: order._id,
       orderItems: order.orderItems.map(item => ({
         name: item.name,
         price: item.price,
         quantity: item.quantity,
-        _id: item._id 
+        _id: item._id
       })),
+      deliveryAddress: {
+        Kecamatan: order.deliveryAddress.kecamatan,
+        Kelurahan: order.deliveryAddress.kelurahan,
+        Kabupaten: order.deliveryAddress.kabupaten,
+      },
       totalAmount: order.totalAmount,
-      orderDate: order.orderDate 
+      orderDate: order.orderDate
     }));
-    
+
     res.status(200).json(transformedOrders);
   } catch (error) {
-    next(error); 
+    next(error); // Lanjutkan error ke middleware error handler
   }
 };
+
+module.exports = { getOrders };
 
 
 const deleteOrder = async (req, res, next) => {

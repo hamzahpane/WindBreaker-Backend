@@ -40,7 +40,7 @@
     app.use('/api',  TagsRoute);
     app.use('/api',  deliveryAddresRoute);
     app.use('/api',  cartItemsRoute);
-    app.use('/api',  orderRouter)
+    app.use('/api',  orderRouter);
     app.use('/api',  invoiceRoute);
     app.use('/api',  orderItemRoute);
     app.use('/api',  PaymentRoute);

@@ -23,10 +23,10 @@ const policies = {
         can('update', 'User', { _id: user._id });
         can('read', 'Cart', { user_id: user._id });
         can('update', 'Cart', { user_id: user._id });
-        // can('view', 'DeliveryAddress');
-        // // can('create', 'DeliveryAddress', { user_id: user._id });
-        // // can('update', 'DeliveryAddress', { user_id: user._id });
-        // // can('delete', 'DeliveryAddress', { user_id: user._id });
+        can('read', 'DeliveryAddress',{ user_id: user._id });
+        can('create', 'DeliveryAddress', { user_id: user._id });
+        can('update', 'DeliveryAddress', { user_id: user._id });
+        can('delete', 'DeliveryAddress', { user_id: user._id });
         can('read', 'Invoice', { user_id: user._id });
         can('create', 'Invoice' , {user_id: user._id}) ;
         can('delete', 'Invoice' , {user_id: user._id});

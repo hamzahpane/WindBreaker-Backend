@@ -7,6 +7,7 @@ const Payment = require('../Payement/model');
 const { policyfor } = require('../../util/index');
 
 
+
 const createInvoice = async (req, res, next) => {
     try {
         const { order_id, payment_id } = req.body;
@@ -30,7 +31,7 @@ const createInvoice = async (req, res, next) => {
             });
         }
 
-    
+        // Cari payment dengan payment_id yang diberikan
         const payment = await Payment.findById(payment_id);
         if (!payment) {
             return res.status(404).json({
@@ -43,10 +44,11 @@ const createInvoice = async (req, res, next) => {
         const newInvoice = new Invoice({
             order: {
                 orderItems: order.orderItems,
+                deliveryAddress: order.deliveryAddress, // Menambahkan alamat pengiriman ke objek invoice
                 totalAmount: order.totalAmount,
                 orderDate: order.orderDate
             },
-            payment: payment.Name  // Menambahkan informasi pembayaran ke dalam objek invoice
+            payment: payment.Name // Menambahkan informasi pembayaran ke dalam objek invoice
         });
 
         // Simpan invoice ke database
@@ -64,10 +66,11 @@ const createInvoice = async (req, res, next) => {
 
 
 
+
 const getInvoice = async (req, res, next) => {
     try {
         const invoices = await Invoice.find();
-        
+
         const transformedInvoices = invoices.map(invoice => ({
             _id: invoice._id,
             order: {
@@ -77,24 +80,27 @@ const getInvoice = async (req, res, next) => {
                     quantity: item.quantity,
                     _id: item._id
                 })),
+                deliveryAddress: invoice.order.deliveryAddress,
+                deliveryFee: invoice.order.deliveryFee,
+                totalProductPrice: invoice.order.totalProductPrice,
                 totalAmount: invoice.order.totalAmount,
+                payment: invoice.order.payment,
                 orderDate: invoice.order.orderDate
-            },
-            payment: invoice.payment
+            }
         }));
-        res.status(200).json(transformedInvoices);
 
+        return res.status(200).json(transformedInvoices);
     } catch (error) {
         console.error('Error fetching invoices:', error);
-        res.status(500).json({
-            error: true,
+        return res.status(500).json({
+            error: 1,
             message: `Terjadi kesalahan saat mengambil data invoice.`
         });
     }
 };
 
 
-
+// Fungsi untuk menghapus invoice berdasarkan ID
 const deleteInvoice = async (req, res, next) => {
     try {
         const invoiceId = req.params.id;
@@ -105,22 +111,23 @@ const deleteInvoice = async (req, res, next) => {
         if (!deletedInvoice) {
             return res.status(404).json({
                 error: 1,
-                message: `Invoice dengan ID  tidak ditemukan.`
+                message: `Invoice dengan ID ${invoiceId} tidak ditemukan.`
             });
         }
 
         return res.status(200).json({
-            message: `Invoice dengan ID  berhasil dihapus.`
+            message: `Invoice dengan ID ${invoiceId} berhasil dihapus.`
         });
-
     } catch (error) {
         console.error('Error deleting invoice:', error);
-        res.status(500).json({
-            error: true,
+        return res.status(500).json({
+            error: 1,
             message: `Terjadi kesalahan saat menghapus invoice.`
         });
     }
 };
+
+
 
 
 const getIdinvoice = async (req, res, next) => {

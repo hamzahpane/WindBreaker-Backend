@@ -1,17 +1,9 @@
 const mongoose = require('mongoose');
+const {dbHost , dbPort , dbName} = require('../app/config');
 
-const {  dbHost ,dbPort , dbUser  ,dbName ,dbPass} = require('../app/config');
-
-console.log(dbUser , dbPass , dbHost , dbPort , dbName );
-
-
-const mongodbURI = `mongodb://${dbUser}:${dbPass}@${dbHost}:${dbPort}/${dbName}?authSource=admin`;
-console.log(mongodbURI);
-
-mongoose.connect(mongodbURI, {
-
-});
-
+mongoose.connect(`mongodb://${dbHost}:${dbPort}/${dbName}`)
+.then(() => console.log('Connected!'))
+.catch(error => console.error('MongoDB connection error:', error));
 
 const db = mongoose.connection;
 

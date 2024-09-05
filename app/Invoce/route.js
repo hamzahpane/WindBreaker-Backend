@@ -8,7 +8,7 @@ router.get('/getinvoice/:id' ,  police_cek('read', 'Invoice'), invoiceControl.ge
 
 router.delete('/deletinvoice/:id' , invoiceControl.deleteInvoice);
 
-router.post('/cretInvoice' , invoiceControl.createInvoice);
+router.post('/cretInvoice' , police_cek('create', 'Invoice' ),invoiceControl.createInvoice);
 
 
 module.exports= router;

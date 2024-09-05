@@ -1,17 +1,38 @@
+// Model Invoice: models/Invoice.js
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 
-const orderItemSchema = new Schema({
+const DeliveryAddressSchema = new Schema({
+    kecamatan: String,
+    kelurahan: String,
+    kabupaten: String,
+    alamat: String
+});
+
+const OrderItemSchema = new Schema({
     name: String,
     price: Number,
     quantity: Number
 });
 
-const orderSchema = new Schema({
-    orderItems: [orderItemSchema],
+const OrderSchema = new Schema({
+    orderItems: [OrderItemSchema],
+    deliveryAddress: DeliveryAddressSchema,
+    deliveryFee: {
+        type: Number,
+        default: 50000
+    },
+    totalProductPrice: {
+        type: Number,
+        default: 0
+    },
     totalAmount: {
         type: Number,
         default: 0
+    },
+    payment: {
+        type: String,
+        required: true
     },
     orderDate: {
         type: Date,
@@ -21,13 +42,9 @@ const orderSchema = new Schema({
 
 const invoiceSchema = new Schema({
     order: {
-        type: orderSchema,
+        type: OrderSchema,
         required: true
     },
-    payment: {
-        type: String,  // Tipe data harus sesuai dengan tipe data di model Payment
-        required: true
-    }
 }, { timestamps: true });
 
 const Invoice = model('Invoice', invoiceSchema);
