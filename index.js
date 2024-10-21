@@ -10,15 +10,14 @@
     const CategoresRoute = require('./app/Category/route');
     const autRoute = require('./app/auth/route');
     const {decodeToken} = require('./midleware/index');
-    const deliveryAddresRoute = require('./app/Deliveryaddres/router');
+
     const TagsRoute = require('./app/Tag/router');
-    const cartItemsRoute = require('./app/Cart/route');
 
     
     const orderRouter = require('./app/Orders/route');
     
     const invoiceRoute = require('./app/Invoce/route');
-    const orderItemRoute  = require('./app/Orderitem/router');
+
     const app = express();
 
     // Mengatur view engine dan direktori views
@@ -38,11 +37,8 @@
     app.use('/api',  ProductRoute);
     app.use('/api',  CategoresRoute);
     app.use('/api',  TagsRoute);
-    app.use('/api',  deliveryAddresRoute);
-    app.use('/api',  cartItemsRoute);
     app.use('/api',  orderRouter);
     app.use('/api',  invoiceRoute);
-    app.use('/api',  orderItemRoute);
     app.use('/api',  PaymentRoute);
         // Routing untuk halaman utama
     app.get('/', (req, res) => {
